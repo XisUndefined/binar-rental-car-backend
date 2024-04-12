@@ -17,6 +17,7 @@ const User = sequelize.define(
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     firstname: {
       type: DataTypes.STRING(50),
