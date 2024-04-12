@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 
 // IMPORT ROUTE
+import authRouter from "./routes/auth.js";
 
 // IMPORT COTROLLER AND HANDLER
 import globalErrorHandler from "./controller/errorController.js";
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // USE ROUTE
+app.use("/api/auth", authRouter);
 
 app.all("*", (req, res, next) => {
   const err = new CustomError(

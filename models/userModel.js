@@ -33,7 +33,7 @@ const User = sequelize.define(
       type: DataTypes.STRING(50),
       validate: {
         len: {
-          args: [1, 50],
+          args: [0, 50],
           msg: "Lastname can't be longer than 50 characters.",
         },
       },
@@ -132,7 +132,7 @@ const User = sequelize.define(
     },
   },
   {
-    tableName: "users",
+    tableName: "Users",
     timestamps: true,
     hooks: {
       async beforeCreate(user) {
