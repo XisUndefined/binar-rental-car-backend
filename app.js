@@ -5,8 +5,8 @@ import cors from "cors";
 // IMPORT ROUTE
 
 // IMPORT COTROLLER AND HANDLER
-import globalErrorHandler from "./controller/errorController";
-import CustomError from "./utils/customErrorHandler";
+import globalErrorHandler from "./controller/errorController.js";
+import CustomError from "./utils/customErrorHandler.js";
 
 const app = express();
 

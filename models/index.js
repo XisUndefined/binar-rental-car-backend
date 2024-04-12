@@ -1,7 +1,7 @@
-import Car from "./carModel";
-import Category from "./categoryModel";
-import User from "./userModel";
-import Order from "./orderModel";
+import Car from "./carModel.js";
+import Category from "./categoryModel.js";
+import User from "./userModel.js";
+import Order from "./orderModel.js";
 
 // One-To-Many Relationship (Category > Car)
 Car.belongsTo(Category, { foreignKey: "category_id" });
