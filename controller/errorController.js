@@ -46,6 +46,10 @@ const handleNotBefore = (err) => {
   );
 };
 
+const handleMulterError = (err) => {
+  return new CustomError(err.message, 413);
+};
+
 const globalErrorHandler = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
@@ -57,6 +61,7 @@ const globalErrorHandler = (error, req, res, next) => {
       error = handleValidationError(error);
     if (error.name === "SequelizeUniqueConstraintError")
       error = handleConstraintError(error);
+    if (error.name === "MulterError") error = handleMulterError(error);
     if (error.name === "TokenExpiredError") error = handleExpiredJWT(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError(error);
     if (error.name === "NotBeforeError") error = handleNotBefore(error);
