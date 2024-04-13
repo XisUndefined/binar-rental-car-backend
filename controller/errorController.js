@@ -50,6 +50,10 @@ const handleMulterError = (err) => {
   return new CustomError(err.message, 413);
 };
 
+const handleDatabaseError = (err) => {
+  return new CustomError("Car with that ID cannot be found!", 404);
+};
+
 const globalErrorHandler = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
@@ -57,6 +61,8 @@ const globalErrorHandler = (error, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     devError(res, error);
   } else if (process.env.NODE_ENV === "production") {
+    if (error.name === "SequelizeDatabaseError")
+      error = handleDatabaseError(error);
     if (error.name === "SequelizeValidationError")
       error = handleValidationError(error);
     if (error.name === "SequelizeUniqueConstraintError")
