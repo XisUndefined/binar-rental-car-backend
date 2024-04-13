@@ -1,17 +1,43 @@
-import Car from "./carModel.js";
-import Category from "./categoryModel.js";
-import User from "./userModel.js";
-import Order from "./orderModel.js";
-import { Sequelize } from "sequelize";
+import { userAttributes, userOptions } from "./userModel.js";
+import { carAttributes } from "./carModel.js";
+import { categoryAttributes, categoryOptions } from "./categoryModel.js";
+import { orderAttributes } from "./orderModel.js";
+import sequelize from "../utils/database.js";
+import crypto from "node:crypto";
+import bcrypt from "bcrypt";
 
-const sequelize = new Sequelize({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_DATABASE,
-  dialect: process.env.DB_CONNECTION,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-});
+export const User = sequelize.define("User", userAttributes, userOptions);
+
+export const Car = sequelize.define("Car", carAttributes);
+
+export const Category = sequelize.define(
+  "Category",
+  categoryAttributes,
+  categoryOptions
+);
+
+export const Order = sequelize.define("Order", orderAttributes);
+
+User.prototype.compareInDb = async function (str, strDB) {
+  return await bcrypt.compare(str, strDB);
+};
+
+User.prototype.compareTimestamp = async function (varTimestamp, dbTimestamp) {
+  const changedTimestamp = parseInt(dbTimestamp.getTime() / 1000);
+  return varTimestamp < changedTimestamp;
+};
+
+User.prototype.createPwdToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.passwordTokenExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  return resetToken;
+};
 
 // One-To-Many Relationship (Category > Car)
 Car.belongsTo(Category, { foreignKey: "category_id" });
@@ -25,7 +51,7 @@ Car.hasMany(Order, { foreignKey: "car_id" });
 Order.belongsTo(Car, { foreignKey: "user_id" });
 User.hasMany(Order, { foreignKey: "user_id" });
 
-const syncModels = async () => {
+export const syncModels = async () => {
   try {
     await sequelize.authenticate();
     console.log("Database connection established successfully.");
@@ -36,5 +62,3 @@ const syncModels = async () => {
     console.error("Unable to connect to the database or sync: ", error);
   }
 };
-
-export { Car, Category, Order, User, syncModels };
