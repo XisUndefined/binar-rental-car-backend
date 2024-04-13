@@ -38,31 +38,34 @@ export const signup = asyncErrorHandler(async (req, res, next) => {
   sendResposeToken(newUser, 201, res);
 });
 
-// export const login = asyncErrorHandler(async (req, res, next) => {
-//   // CEK INPUT EMAIL
-//   const { email, pwd } = req.body;
-//   if (!email || !pwd) {
-//     const error = new CustomError("Please insert email and password.", 400);
-//     return next(error);
-//   }
+export const login = asyncErrorHandler(async (req, res, next) => {
+  // CEK INPUT EMAIL
+  const { email, pwd } = req.body;
+  if (!email || !pwd) {
+    const error = new CustomError("Please insert email and password.", 400);
+    return next(error);
+  }
 
-//   // CEK EMAIL USER TERDAFTAR
-//   const user = await User.findOne({ where: { email } });
-//   if (!user) {
-//     const error = new CustomError(
-//       "The requested user could not be found.",
-//       400
-//     );
-//     return next(error);
-//   }
+  // CEK EMAIL USER TERDAFTAR
+  const user = await User.findOne({ where: { email } });
+  if (!user) {
+    const error = new CustomError(
+      "The requested user could not be found.",
+      400
+    );
+    return next(error);
+  }
 
-//   // CEK PASSWORD
-//   const isMatch = await user.compareInDb(pwd, user.password);
-//   if (!isMatch) {
-//     const error = new CustomError("Incorrect email or password.", 400);
-//     return next(error);
-//   }
+  // CEK PASSWORD
+  const isMatch = await user.compareInDb(pwd, user.password);
+  if (!isMatch) {
+    const error = new CustomError(
+      "Incorrect password: The password you entered is incorrect. Please try again.",
+      400
+    );
+    return next(error);
+  }
 
-//   // MENGIRIM TOKEN
-//   sendResposeToken(user, 200, res);
-// });
+  // MENGIRIM TOKEN
+  sendResposeToken(user, 200, res);
+});
