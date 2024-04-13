@@ -1,3 +1,5 @@
+import CustomError from "../utils/customErrorHandler.js";
+
 const devError = (res, error) => {
   res.status(error.statusCode).json({
     status: error.status,
@@ -21,6 +23,14 @@ const prodError = (res, error) => {
   }
 };
 
+const handleValidationError = (err) => {
+  return new CustomError(err.errors[0].message, 400);
+};
+
+const handleConstraintError = (err) => {
+  return new CustomError(err.errors[0].message, 400);
+};
+
 const globalErrorHandler = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
@@ -28,6 +38,10 @@ const globalErrorHandler = (error, req, res, next) => {
   if (process.env.NODE_ENV === "development") {
     devError(res, error);
   } else if (process.env.NODE_ENV === "production") {
+    if (error.name === "SequelizeValidationError")
+      error = handleValidationError(error);
+    if (error.name === "SequelizeUniqueConstraintError")
+      error = handleConstraintError(error);
     if (error.name === "TokenExpiredError") error = handleExpiredJWT(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError(error);
 

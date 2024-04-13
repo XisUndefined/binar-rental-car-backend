@@ -29,9 +29,14 @@ export const userAttributes = {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: {
+      arg: true,
+      msg: "This email address is already exist.",
+    },
     validate: {
-      isEmail: true,
+      isEmail: {
+        msg: "Invalid email address. Please insert a valid email address.",
+      },
     },
   },
   password: {

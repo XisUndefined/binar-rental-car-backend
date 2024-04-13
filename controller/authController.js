@@ -32,13 +32,13 @@ const sendResposeToken = (user, statusCode, res) => {
   });
 };
 
-const signup = asyncErrorHandler(async (req, res, next) => {
+export const signup = asyncErrorHandler(async (req, res, next) => {
   const newUser = await User.create(req.body);
 
   sendResposeToken(newUser, 201, res);
 });
 
-// const login = asyncErrorHandler(async (req, res, next) => {
+// export const login = asyncErrorHandler(async (req, res, next) => {
 //   // CEK INPUT EMAIL
 //   const { email, pwd } = req.body;
 //   if (!email || !pwd) {
@@ -66,5 +66,3 @@ const signup = asyncErrorHandler(async (req, res, next) => {
 //   // MENGIRIM TOKEN
 //   sendResposeToken(user, 200, res);
 // });
-
-export { signup };
