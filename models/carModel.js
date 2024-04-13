@@ -9,6 +9,10 @@ export const carAttributes = {
   plate: {
     type: DataTypes.STRING(10),
     allowNull: false,
+    unique: {
+      arg: true,
+      msg: "This plate number is already exist!",
+    },
     validate: {
       isPlate(value) {
         const plateRegex = /^[A-Z]{1,2}\s?\d{1,4}\s?[A-Z]{0,3}$/;
@@ -18,7 +22,7 @@ export const carAttributes = {
       },
     },
   },
-  transmision: {
+  transmission: {
     type: DataTypes.STRING,
     allowNull: false,
   },

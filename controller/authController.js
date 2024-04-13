@@ -69,3 +69,47 @@ export const login = asyncErrorHandler(async (req, res, next) => {
   // MENGIRIM TOKEN
   sendResposeToken(user, 200, res);
 });
+
+export const protect = asyncErrorHandler(async (req, res, next) => {
+  // CEK TOKEN PADA REQUEST HEADER
+  const testToken = req.headers.authorization;
+  if (!testToken || !testToken.startsWith("bearer")) {
+    const error = new CustomError("You are not logged in!", 401);
+    return next(error);
+  }
+
+  const token = testToken.split(" ")[1];
+
+  // VERIFIKASI TOKEN (MENGAMBIL ID USER DARI PAYLOAD)
+  const decodedToken = await util.promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+
+  // MENGECEK USER MELALUI ID USER PADA PAYLOAD
+  const user = await User.findByPk(decodedToken.id);
+
+  if (!user) {
+    return next(
+      new CustomError("The user with the given token does not exist", 401)
+    );
+  }
+
+  // MENGECEK APAKAH PASSWORD DIGANTI
+  const isChanged = await user.compareTimestamp(
+    decodedToken.iat,
+    user.passwordChangedAt
+  );
+  if (isChanged) {
+    return next(
+      new CustomError(
+        "The password has been changed recently. Please login again!",
+        401
+      )
+    );
+  }
+
+  // ASSIGN USER KEDALAM VARIABLE REQUEST
+  req.user = user;
+  next();
+});

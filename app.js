@@ -4,6 +4,7 @@ import cors from "cors";
 
 // IMPORT ROUTE
 import authRouter from "./routes/auth.js";
+import adminRouter from "./routes/admin.js";
 
 // IMPORT COTROLLER AND HANDLER
 import globalErrorHandler from "./controller/errorController.js";
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // USE ROUTE
+app.use("/api/admin", adminRouter);
 app.use("/api/auth", authRouter);
 
 app.all("*", (req, res, next) => {
