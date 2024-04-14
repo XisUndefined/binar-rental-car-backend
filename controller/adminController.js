@@ -2,6 +2,9 @@ import asyncErrorHandler from "../utils/asyncErrorHandler.js";
 import { Car, User, Category } from "../models/index.js";
 import CustomError from "../utils/customErrorHandler.js";
 import crypto from "node:crypto";
+import fs, { promises as fsPromises } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 export const verifyAdmin = asyncErrorHandler(async (req, res, next) => {
   // MENGAMBIL DATA USER MELALUI PROPERTI ID PADA REQUEST
@@ -111,5 +114,38 @@ export const updateCar = asyncErrorHandler(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: updateCar[1][0],
+  });
+});
+
+export const deleteCar = asyncErrorHandler(async (req, res, next) => {
+  const selectedCar = await Car.findByPk(req.params.id);
+
+  if (!selectedCar) {
+    const err = new CustomError("Car with that ID cannot be found!", 404);
+    return next(err);
+  }
+  const { access, unlink } = fsPromises;
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const fileNameToDelete = selectedCar.image.split("/").slice(-1);
+
+  const filePathToDelete = path.join(
+    __dirname,
+    "../uploads/data/car",
+    fileNameToDelete[0]
+  );
+
+  await access(filePathToDelete, fs.constants.F_OK);
+
+  await unlink(filePathToDelete);
+
+  await Car.destroy({
+    where: { id: req.params.id },
+  });
+
+  res.status(204).json({
+    status: "success",
+    data: null,
   });
 });

@@ -2,6 +2,7 @@ import express from "express";
 import { protect } from "../controller/authController.js";
 import {
   createCar,
+  deleteCar,
   getAllCars,
   getCar,
   updateCar,
@@ -19,6 +20,7 @@ router
 router
   .route("/cars/:id")
   .get(protect, verifyAdmin, getCar)
-  .patch(protect, verifyAdmin, upload.single("car"), updateCar);
+  .patch(protect, verifyAdmin, upload.single("car"), updateCar)
+  .delete(protect, verifyAdmin, deleteCar);
 
 export default router;
