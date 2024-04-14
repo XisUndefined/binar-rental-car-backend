@@ -51,7 +51,17 @@ const handleMulterError = (err) => {
 };
 
 const handleDatabaseError = (err) => {
-  return new CustomError("Car with that ID cannot be found!", 404);
+  if (err.parent.file === "uuid.c") {
+    return new CustomError("Car with that ID cannot be found!", 404);
+  }
+  if (err.parent.file === "enum.c") {
+    const match = err.parent.sql.match(/'([^']*)'/);
+    const extractedString = match ? match[1] : null;
+    return new CustomError(
+      `invalid input value for category: '${extractedString}'`,
+      400
+    );
+  }
 };
 
 const globalErrorHandler = (error, req, res, next) => {
